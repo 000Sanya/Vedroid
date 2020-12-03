@@ -2,10 +2,17 @@ package tk.nullsanya.vedroid
 
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.view.MotionEvent
+import android.view.MotionEvent.*
+import android.view.ScaleGestureDetector
+import android.view.View
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MyGLRenderer(private val vertexCode: String, private val fragmentCode: String) : GLSurfaceView.Renderer {
+class MyGLRenderer(
+    private val vertexCode: String,
+    private val fragmentCode: String
+) : GLSurfaceView.Renderer, View.OnTouchListener {
     private lateinit var program: Program
     private lateinit var model: Model
     private val camera: Camera = Camera()
@@ -14,20 +21,22 @@ class MyGLRenderer(private val vertexCode: String, private val fragmentCode: Str
         program = Program(vertexCode, fragmentCode)
         model = ModelBuilder().apply {
             addTriangle(
-                Vector3(-0.5f, 0.0f, 0.0f),
-                Vector3(0.5f, 0.0f, 0.0f),
-                Vector3(0.0f, -0.5f, 0.0f),
+                XYZ(0f, -1f, -1f),
+                XYZ(0f, -1f, 1f),
+                XYZ(0f, 1f, 0f),
                 Color(1.0f, 0.0f, 0.0f, 0.0f)
             )
         }.toModel()
 
         camera.lookAt(
-            Vector3(0f, 0.1f, -0.1f),
-            Vector3(0f, 0f, 0f)
+            XYZ(1f, 0f, 0f),
+            XYZ(0f, 0f, 0f)
         )
 
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
     }
+
+
 
     override fun onSurfaceChanged(p0: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
@@ -41,4 +50,36 @@ class MyGLRenderer(private val vertexCode: String, private val fragmentCode: Str
         }
     }
 
+    private lateinit var lastXY: XY
+    override fun onTouch(v: View?, event: MotionEvent): Boolean {
+        val scale = (v ?.resources ?.displayMetrics ?.density ?: 1f) * 20
+        val current = XY(event.x, event.y)
+        when (event.actionMasked) {
+            ACTION_DOWN -> {
+                lastXY = current
+            }
+            ACTION_MOVE -> {
+                try {
+                    val diff = (lastXY - current) / scale
+                    println(diff)
+                    camera.moveByAngleDiff(-diff.x, -diff.y)
+                    if (v is GLSurfaceView) {
+                        v.requestRender()
+                    }
+                } catch (e: UninitializedPropertyAccessException) {
+                    // do nothing
+                } finally {
+                    lastXY = current
+                }
+            }
+            ACTION_UP -> {
+                lastXY = XY(0f, 0f)
+                camera.lookAt(XYZ(1f, 0f, 0f))
+            }
+        }
+
+        println(lastXY)
+
+        return true
+    }
 }
