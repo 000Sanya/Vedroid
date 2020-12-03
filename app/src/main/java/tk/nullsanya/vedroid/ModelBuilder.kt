@@ -7,6 +7,8 @@ inline val XY.x
     get() = first
 inline val XY.y
     get() = second
+inline val XY.hypotenuse
+    get() = sqrt(x * x + y * y)
 operator fun XY.plus(other: XY): XY = XY(x + other.x, y + other.y)
 operator fun XY.minus(other: XY): XY = XY(x - other.x, y - other.y)
 operator fun XY.times(with: Float): XY = XY(x * with, y * with)
@@ -24,9 +26,9 @@ operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - othe
 val XYZ.r: Float
     get() = sqrt(x * x + y * y + z * z)
 val XYZ.theta: Float
-    get() = atan(sqrt(x * x + y * y) / z)
+    get() = atan2((x to y).hypotenuse, z)
 val XYZ.phi: Float
-    get() = atan(y / x)
+    get() = atan2(y, x)
 val XYZ.spherical
     get() = SphericalChords(this)
 
@@ -47,7 +49,7 @@ val SphericalChords.z: Float
 val SphericalChords.xyz
     get() = XYZ(x, y, z)
 
-data class Color(val r: Float, val g: Float, val b: Float, val a: Float)
+data class Color(val r: Float, val g: Float, val b: Float, val a: Float = 0f)
 
 class ModelBuilder {
     private val buffer: MutableList<Float> = mutableListOf()

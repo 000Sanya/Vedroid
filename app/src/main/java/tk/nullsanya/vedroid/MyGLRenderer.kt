@@ -15,6 +15,7 @@ class MyGLRenderer(
 ) : GLSurfaceView.Renderer, View.OnTouchListener {
     private lateinit var program: Program
     private lateinit var model: Model
+    private lateinit var xyzAxises: Model
     private val camera: Camera = Camera()
 
     override fun onSurfaceCreated(p0: GL10?, p1: EGLConfig?) {
@@ -24,7 +25,31 @@ class MyGLRenderer(
                 XYZ(0f, -1f, -1f),
                 XYZ(0f, -1f, 1f),
                 XYZ(0f, 1f, 0f),
-                Color(1.0f, 0.0f, 0.0f, 0.0f)
+                Color(1.0f, 0.0f, 0.0f)
+            )
+        }.toModel()
+
+        xyzAxises = ModelBuilder().apply {
+            addRectangle(
+                XYZ(10000F, 0.1f, 0f),
+                XYZ(10000F, -0.1f, 0f),
+                XYZ(-10000F, 0.1f, 0f),
+                XYZ(-10000F, -0.1f, 0f),
+                Color(1f, 0f, 0f)
+            )
+            addRectangle(
+                XYZ(0.1f, 10000F, 0f),
+                XYZ(-0.1f, 10000F, 0f),
+                XYZ(0.1f, -10000F, 0f),
+                XYZ(-0.1f, -10000F, 0f),
+                Color(0f, 1f, 0f)
+            )
+            addRectangle(
+                XYZ(0.1f, 0f, 10000F),
+                XYZ(-0.1f, 0f, 10000F),
+                XYZ(0.1f, 0f, -10000F),
+                XYZ(-0.1f, 0f, -10000F),
+                Color(0f, 0f, 1f)
             )
         }.toModel()
 
@@ -47,6 +72,7 @@ class MyGLRenderer(
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         program.withShader {
             model.draw(it, camera)
+            xyzAxises.draw(it, camera)
         }
     }
 
@@ -62,7 +88,7 @@ class MyGLRenderer(
                 try {
                     val diff = (lastXY - current) / scale
                     println(diff)
-                    camera.moveByAngleDiff(-diff.x, -diff.y)
+                    camera.moveByAngleDiff(diff.x, -diff.y)
                     if (v is GLSurfaceView) {
                         v.requestRender()
                     }
