@@ -32,7 +32,7 @@ fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
     theta = when (y) {
         -1f -> -halfPI
         1f -> halfPI
-        else -> acos((x / sqrt(1 - y * y)).clamp(-1f, 1f))
+        else -> atan2(z, x)
     },
     phi = asin(y.clamp(-1f, 1f).also { println(it) })
 )
