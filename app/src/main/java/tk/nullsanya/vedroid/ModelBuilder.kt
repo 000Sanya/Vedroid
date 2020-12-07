@@ -25,7 +25,7 @@ inline val XYZ.z
 operator fun XYZ.plus(other: XYZ): XYZ = XYZ(x + other.x, y + other.y, z + other.z)
 operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - other.z)
 
-fun XYZ.normalize() = XYZ(x / r, y / r, z / r)
+fun XYZ.normalize() = r.let { r -> XYZ(x / r, y / r, z / r) }
 
 fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
     r,
