@@ -86,7 +86,7 @@ class Model(
 
         camera.useUniform(program) {
             GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, bufferObjects[1])
-            GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, indicesCount, GLES20.GL_UNSIGNED_INT, 0)
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, indicesCount, GLES20.GL_UNSIGNED_INT, 0)
         }
 
         GLES20.glDisableVertexAttribArray(colorLocation)

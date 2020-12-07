@@ -67,12 +67,15 @@ class Camera() {
             -1f,
             1f,
             0.1f,
-            1000f
+            10f
         )
         forceRedraw()
     }
 
     private fun updatePosition() {
+        println("Center: $_center")
+        println("Targer: $_target")
+
         Matrix.setLookAtM(
             view,
             0,

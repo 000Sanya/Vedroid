@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         surfaceView = GLSurfaceView(this)
         surfaceView.setEGLContextClientVersion(2)
+        surfaceView.setEGLConfigChooser(8,8,8,8,24,0)
         surfaceView.setRenderer(render)
         surfaceView.setOnTouchListener(render)
 

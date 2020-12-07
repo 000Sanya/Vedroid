@@ -13,19 +13,71 @@ class MyGLRenderer(
     private val fragmentCode: String
 ) : GLSurfaceView.Renderer, View.OnTouchListener {
     private lateinit var program: Program
-    private lateinit var model: Model
+    private lateinit var model1: Model
     private lateinit var xyzAxises: Model
     private val camera: Camera = Camera()
 
     override fun onSurfaceCreated(p0: GL10?, p1: EGLConfig?) {
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+        GLES20.glDepthFunc(GLES20.GL_LEQUAL)
+        GLES20.glDepthMask(true)
+
         program = Program(vertexCode, fragmentCode)
-        model = ModelBuilder().apply {
-            addTriangle(
-                XYZ(0f, -1f, -1f),
-                XYZ(0f, -1f, 1f),
-                XYZ(0f, 1f, 0f),
-                Color(1.0f, 0.0f, 0.0f)
+        model1 = ModelBuilder().apply {
+            val xn = -0.5f
+            val xp = 0.5f
+
+            val yn = -0.5f
+            val yp = 0.5f
+
+            val zn = -0.5f
+            val zp = 0.5f
+
+            addRectangle(
+                XYZ(xn, yn, zp),
+                XYZ(xn, yp, zp),
+                XYZ(xp, yn, zp),
+                XYZ(xp, yp, zp),
+                Color(1f, 0f, 0f)
             )
+            addRectangle(
+                XYZ(xn, yn, zn),
+                XYZ(xn, yp, zn),
+                XYZ(xp, yn, zn),
+                XYZ(xp, yp, zn),
+                Color(1f, 0f, 0f)
+            )
+
+            addRectangle(
+                XYZ(xn, yn, zn),
+                XYZ(xn, yn, zp),
+                XYZ(xn, yp, zn),
+                XYZ(xn, yp, zp),
+                Color(0f, 1f, 0f)
+            )
+            addRectangle(
+                XYZ(xp, yn, zn),
+                XYZ(xp, yn, zp),
+                XYZ(xp, yp, zn),
+                XYZ(xp, yp, zp),
+                Color(0f, 1f, 0f)
+            )
+
+            addRectangle(
+                XYZ(xn, yn, zn),
+                XYZ(xp, yn, zn),
+                XYZ(xn, yn, zp),
+                XYZ(xp, yn, zp),
+                Color(0f, 0f, 1f)
+            )
+            addRectangle(
+                XYZ(xn, yp, zn),
+                XYZ(xp, yp, zn),
+                XYZ(xn, yp, zp),
+                XYZ(xp, yp, zp),
+                Color(0f, 0f, 1f)
+            )
+
         }.toModel()
 
         xyzAxises = ModelBuilder().apply {
@@ -53,7 +105,7 @@ class MyGLRenderer(
         }.toModel()
 
         camera.placeAt(
-            XYZ(1f, 0f, 0f),
+            XYZ(0.7f, 0.7f, -0.7f),
             XYZ(0f, 0f, 0f)
         )
 
@@ -68,10 +120,12 @@ class MyGLRenderer(
     }
 
     override fun onDrawFrame(p0: GL10?) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES20.glClearColor(0f, 0f, 0f, 0f)
+        GLES20.glClearDepthf(1f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT.or(GLES20.GL_DEPTH_BUFFER_BIT))
         program.withShader {
-            model.draw(it, camera)
-            xyzAxises.draw(it, camera)
+            model1.draw(it, camera)
+            //xyzAxises.draw(it, camera)
         }
     }
 
@@ -86,7 +140,6 @@ class MyGLRenderer(
             ACTION_MOVE -> {
                 try {
                     val diff = (lastXY - current) / scale
-                    println(diff)
                     camera.moveBySphericalDiff(0f, diff.x, -diff.y)
                     if (v is GLSurfaceView) {
                         v.requestRender()
@@ -101,8 +154,6 @@ class MyGLRenderer(
                 lastXY = XY(0f, 0f)
             }
         }
-
-        println(lastXY)
 
         return true
     }
