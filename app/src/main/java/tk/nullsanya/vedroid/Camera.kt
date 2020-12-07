@@ -23,12 +23,10 @@ class Camera() {
         }
         get() = _target
 
-    private var _sphericalCenter: SphericalChords = SphericalChords(3f, PI.toFloat() / 4f, PI.toFloat() / 6f)
     var sphericalCenter: SphericalChords
-        get() = _sphericalCenter
+        get() = (from - to).spherical
         set(value) {
-            _sphericalCenter = value.apply { println(this) }
-            from = _sphericalCenter.xyz
+            from = value.xyz + to
         }
 
     private val matrix = FloatArray(16)

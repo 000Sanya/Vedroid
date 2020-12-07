@@ -25,12 +25,13 @@ inline val XYZ.z
 operator fun XYZ.plus(other: XYZ): XYZ = XYZ(x + other.x, y + other.y, z + other.z)
 operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - other.z)
 
+const val halfPI = (PI / 2).toFloat()
 val XYZ.r: Float
     get() = sqrt(x * x + y * y + z * z)
 val XYZ.theta: Float
     get() = atan2((x to y).hypotenuse, z)
 val XYZ.phi: Float
-    get() = atan2(y, x)
+    get() = atan2(y, x).clamp(-halfPI, halfPI)
 val XYZ.spherical
     get() = SphericalChords(this)
 
