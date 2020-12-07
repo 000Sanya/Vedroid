@@ -27,23 +27,23 @@ operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - othe
 
 fun XYZ.normalize(r: Float = this.r) = XYZ(x / r, y / r, z / r)
 
-fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
-    r,
-    theta = when (y) {
-        -1f -> -halfPI
-        1f -> halfPI
-        else -> acos((x / sqrt(1 - y * y)).clamp(-1f, 1f))
-    },
-    phi = asin(y.clamp(-1f, 1f).also { println(it) })
-)
-
 const val halfPI = (PI / 2).toFloat()
 val XYZ.r: Float
     get() = sqrt(x * x + y * y + z * z)
 val XYZ.theta: Float
-    get() = asin(z / r)
+    get() = when (y) {
+        -1f -> -halfPI
+        1f -> halfPI
+        else -> acos((x / sqrt(1 - y * y)).clamp(-1f, 1f))
+    }
 val XYZ.phi: Float
-    get() = atan2(-y / r, x / r).clamp(-halfPI, halfPI)
+    get() = asin(y.clamp(-1f, 1f))
+
+fun XYZ.toEuler(originalR: Float = this.r) = SphericalChords(
+    originalR,
+    theta = theta,
+    phi = phi
+)
 val XYZ.spherical
     get() = r.let { r -> normalize(r).toEuler(r) }
 
