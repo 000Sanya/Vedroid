@@ -27,10 +27,10 @@ operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - othe
 
 fun XYZ.normalize() = XYZ(x / r, y / r, z / r)
 
-fun XYZ.toEuler() = SphericalChords(
+fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
     r,
-    theta = asin(y),
-    phi = acos(x / sqrt(1 - y * y))
+    theta = acos(x / sqrt(1 - y * y)),
+    phi = asin(y)
 )
 
 const val halfPI = (PI / 2).toFloat()
@@ -41,7 +41,7 @@ val XYZ.theta: Float
 val XYZ.phi: Float
     get() = atan2(-y / r, x / r).clamp(-halfPI, halfPI)
 val XYZ.spherical
-    get() = normalize().toEuler()
+    get() = normalize().toEuler(r)
 
 data class SphericalChords(
     val r: Float,
