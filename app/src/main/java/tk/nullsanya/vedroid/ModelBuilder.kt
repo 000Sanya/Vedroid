@@ -25,7 +25,7 @@ inline val XYZ.z
 operator fun XYZ.plus(other: XYZ): XYZ = XYZ(x + other.x, y + other.y, z + other.z)
 operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - other.z)
 
-fun XYZ.normalize() = r.let { r -> XYZ(x / r, y / r, z / r) }
+fun XYZ.normalize(r: Float = this.r) = XYZ(x / r, y / r, z / r)
 
 fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
     r,
@@ -41,7 +41,7 @@ val XYZ.theta: Float
 val XYZ.phi: Float
     get() = atan2(-y / r, x / r).clamp(-halfPI, halfPI)
 val XYZ.spherical
-    get() = normalize().toEuler(r)
+    get() = r.let { r -> normalize(r).toEuler(r) }
 
 data class SphericalChords(
     val r: Float,
