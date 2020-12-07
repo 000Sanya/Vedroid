@@ -53,13 +53,13 @@ inline operator fun SphericalChords.minus(other: SphericalChords) = SphericalCho
 )
 
 val SphericalChords.x: Chord
+    get() = r * cos(theta) * cos(phi)
+val SphericalChords.z: Chord
     get() = r * sin(theta) * cos(phi)
 val SphericalChords.y: Chord
-    get() = r * sin(theta) * sin(phi)
-val SphericalChords.z: Chord
-    get() = r * cos(theta)
+    get() = r * sin(phi)
 val SphericalChords.xyz
-    get() = XYZ(x, y, z)
+    get() = XYZ(x, y, z).apply { println(this) }
 
 data class Color(val r: Float, val g: Float, val b: Float, val a: Float = 0f)
 

@@ -2,6 +2,7 @@ package tk.nullsanya.vedroid
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import kotlin.math.PI
 
 class Camera() {
     private var _center: XYZ = XYZ(0f, 0f, 0f)
@@ -12,6 +13,7 @@ class Camera() {
             forceRedraw()
         }
         get() = _center
+
     private var _target: XYZ = XYZ(0f, 0f, 0f)
     var to: XYZ
         set(value) {
@@ -20,16 +22,15 @@ class Camera() {
             forceRedraw()
         }
         get() = _target
+
+    private var _sphericalCenter: SphericalChords = SphericalChords(3f, PI.toFloat() / 4f, PI.toFloat() / 6f)
     var sphericalCenter: SphericalChords
-        get() = from.spherical
+        get() = _sphericalCenter
         set(value) {
-            from = value.xyz
+            _sphericalCenter = value.apply { println(this) }
+            from = _sphericalCenter.xyz
         }
-    var sphericalTarget: SphericalChords
-        get() = to.spherical
-        set(value) {
-            to = value.xyz
-        }
+
     private val matrix = FloatArray(16)
     private val view = FloatArray(16)
     private val projection = FloatArray(16)
@@ -47,14 +48,7 @@ class Camera() {
         forceRedraw()
     }
 
-    fun moveByDiff(diff: XYZ) {
-        _center += diff
-        _target += diff
-        updatePosition()
-        forceRedraw()
-    }
-
-    inline fun moveBySphericalDiff(r: Float, thetaChange: Float, phiChange: Float) {
+    fun moveBySphericalDiff(r: Float, thetaChange: Float, phiChange: Float) {
         sphericalCenter += SphericalChords(r, thetaChange, phiChange)
     }
 
@@ -66,16 +60,13 @@ class Camera() {
             +aspectRatio,
             -1f,
             1f,
-            0.1f,
+            1f,
             10f
         )
         forceRedraw()
     }
 
     private fun updatePosition() {
-        println("Center: $_center")
-        println("Targer: $_target")
-
         Matrix.setLookAtM(
             view,
             0,

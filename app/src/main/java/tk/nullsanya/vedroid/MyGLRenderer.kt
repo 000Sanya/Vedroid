@@ -105,7 +105,7 @@ class MyGLRenderer(
         }.toModel()
 
         camera.placeAt(
-            XYZ(0.7f, 0.7f, -0.7f),
+            XYZ(3.00f, 0f, 0f),
             XYZ(0f, 0f, 0f)
         )
 
@@ -116,7 +116,7 @@ class MyGLRenderer(
 
     override fun onSurfaceChanged(p0: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
-        camera.setAspectRatio((width.toFloat() / height.toFloat()))
+        camera.setAspectRatio(width.toFloat() / height.toFloat())
     }
 
     override fun onDrawFrame(p0: GL10?) {
@@ -140,7 +140,7 @@ class MyGLRenderer(
             ACTION_MOVE -> {
                 try {
                     val diff = (lastXY - current) / scale
-                    camera.moveBySphericalDiff(0f, diff.x, -diff.y)
+                    camera.moveBySphericalDiff(0f, diff.x, diff.y)
                     if (v is GLSurfaceView) {
                         v.requestRender()
                     }
