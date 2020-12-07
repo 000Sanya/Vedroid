@@ -2,7 +2,9 @@ package tk.nullsanya.vedroid
 
 import kotlin.math.*
 
-typealias XY = Pair<Float, Float>
+typealias Chord = Float
+
+typealias XY = Pair<Chord, Chord>
 inline val XY.x
     get() = first
 inline val XY.y
@@ -13,7 +15,7 @@ operator fun XY.plus(other: XY): XY = XY(x + other.x, y + other.y)
 operator fun XY.minus(other: XY): XY = XY(x - other.x, y - other.y)
 operator fun XY.times(with: Float): XY = XY(x * with, y * with)
 operator fun XY.div(with: Float): XY = XY(x / with, y / with)
-typealias XYZ = Triple<Float, Float, Float>
+typealias XYZ = Triple<Chord, Chord, Chord>
 inline val XYZ.x
     get() = first
 inline val XYZ.y
@@ -33,18 +35,28 @@ val XYZ.spherical
     get() = SphericalChords(this)
 
 data class SphericalChords(
-    var r: Float,
-    var theta: Float,
-    var phi: Float
+    val r: Float,
+    val theta: Float,
+    val phi: Float
 ) {
     constructor(from: XYZ) : this(from.r, from.theta, from.phi)
 }
+inline operator fun SphericalChords.plus(other: SphericalChords) = SphericalChords(
+    r + other.r,
+    theta + other.theta,
+    phi + other.phi
+)
+inline operator fun SphericalChords.minus(other: SphericalChords) = SphericalChords(
+    r - other.r,
+    theta - other.theta,
+    phi - other.phi
+)
 
-val SphericalChords.x: Float
+val SphericalChords.x: Chord
     get() = r * sin(theta) * cos(phi)
-val SphericalChords.y: Float
+val SphericalChords.y: Chord
     get() = r * sin(theta) * sin(phi)
-val SphericalChords.z: Float
+val SphericalChords.z: Chord
     get() = r * cos(theta)
 val SphericalChords.xyz
     get() = XYZ(x, y, z)
@@ -84,6 +96,16 @@ class ModelBuilder {
         indexesBuffer.addAll(listOf(0, 1, 2, 1, 3, 2).map { it + currentIndex })
         currentIndex += 4
     }
+
+//    fun addRectParallelepiped(
+//        center1: XYZ,
+//        center2: XYZ,
+//        size1: Float,
+//        size2: Float,
+//        color: Color
+//    ) {
+//
+//    }
 
     fun toModel() = Model(buffer, indexesBuffer)
 }

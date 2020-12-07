@@ -4,22 +4,32 @@ import android.opengl.GLES20
 import android.opengl.Matrix
 
 class Camera() {
-    private var _from: XYZ = XYZ(0f, 0f, 0f)
+    private var _center: XYZ = XYZ(0f, 0f, 0f)
     var from: XYZ
         set(value) {
-            _from = value
+            _center = value
             updatePosition()
             forceRedraw()
         }
-        get() = _from
-    private var _to: XYZ = XYZ(0f, 0f, 0f)
+        get() = _center
+    private var _target: XYZ = XYZ(0f, 0f, 0f)
     var to: XYZ
         set(value) {
-            _to = value
+            _target = value
             updatePosition()
             forceRedraw()
         }
-        get() = _to
+        get() = _target
+    var sphericalCenter: SphericalChords
+        get() = from.spherical
+        set(value) {
+            from = value.xyz
+        }
+    var sphericalTarget: SphericalChords
+        get() = to.spherical
+        set(value) {
+            to = value.xyz
+        }
     private val matrix = FloatArray(16)
     private val view = FloatArray(16)
     private val projection = FloatArray(16)
@@ -30,28 +40,22 @@ class Camera() {
         block()
     }
 
-    fun lookAt(from: XYZ, to: XYZ = XYZ(0f, 0f, 0f)) {
-        _from = from
-        _to = to
+    fun placeAt(center: XYZ, target: XYZ = XYZ(0f, 0f, 0f)) {
+        _center = center
+        _target = target
         updatePosition()
         forceRedraw()
     }
 
     fun moveByDiff(diff: XYZ) {
-        _from += diff
-        _to += diff
+        _center += diff
+        _target += diff
         updatePosition()
         forceRedraw()
     }
 
-    fun moveByAngleDiff(zXYChange: Float, xyChange: Float) {
-        val spherical = (_from - _to).spherical
-        _from = spherical.apply {
-            theta += zXYChange
-            phi += xyChange
-        }.xyz + _to
-        updatePosition()
-        forceRedraw()
+    inline fun moveBySphericalDiff(r: Float, thetaChange: Float, phiChange: Float) {
+        sphericalCenter += SphericalChords(r, thetaChange, phiChange)
     }
 
     fun setAspectRatio(aspectRatio: Float) {
@@ -72,12 +76,12 @@ class Camera() {
         Matrix.setLookAtM(
             view,
             0,
-            _from.first,
-            _from.second,
-            _from.third,
-            _to.first,
-            _to.second,
-            _to.third,
+            _center.first,
+            _center.second,
+            _center.third,
+            _target.first,
+            _target.second,
+            _target.third,
             0f,
             1f,
             0f

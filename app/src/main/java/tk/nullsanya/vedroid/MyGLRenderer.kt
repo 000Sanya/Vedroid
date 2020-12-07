@@ -4,7 +4,6 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.view.MotionEvent
 import android.view.MotionEvent.*
-import android.view.ScaleGestureDetector
 import android.view.View
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -53,7 +52,7 @@ class MyGLRenderer(
             )
         }.toModel()
 
-        camera.lookAt(
+        camera.placeAt(
             XYZ(1f, 0f, 0f),
             XYZ(0f, 0f, 0f)
         )
@@ -88,7 +87,7 @@ class MyGLRenderer(
                 try {
                     val diff = (lastXY - current) / scale
                     println(diff)
-                    camera.moveByAngleDiff(diff.x, -diff.y)
+                    camera.moveBySphericalDiff(0f, diff.x, -diff.y)
                     if (v is GLSurfaceView) {
                         v.requestRender()
                     }
@@ -100,7 +99,6 @@ class MyGLRenderer(
             }
             ACTION_UP -> {
                 lastXY = XY(0f, 0f)
-                camera.lookAt(XYZ(1f, 0f, 0f))
             }
         }
 
