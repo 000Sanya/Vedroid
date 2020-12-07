@@ -140,7 +140,7 @@ class MyGLRenderer(
             ACTION_MOVE -> {
                 try {
                     val diff = (lastXY - current) / scale
-                    camera.moveBySphericalDiff(0f, diff.x, diff.y)
+                    camera.moveBySphericalDiff(0f, -diff.x, diff.y)
                     if (v is GLSurfaceView) {
                         v.requestRender()
                     }
