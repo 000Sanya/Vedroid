@@ -25,15 +25,24 @@ inline val XYZ.z
 operator fun XYZ.plus(other: XYZ): XYZ = XYZ(x + other.x, y + other.y, z + other.z)
 operator fun XYZ.minus(other: XYZ): XYZ = XYZ(x - other.x, y - other.y, z - other.z)
 
+fun XYZ.normalize() = XYZ(x / r, y / r, z / r)
+
+fun XYZ.toEuler(): SphericalChords {
+    val d = normalize()
+    val phi = asin(d.y)
+    val theta = acos(d.x / sqrt(1 - d.y*d.y))
+    return SphericalChords(r, theta, phi)
+}
+
 const val halfPI = (PI / 2).toFloat()
 val XYZ.r: Float
     get() = sqrt(x * x + y * y + z * z)
 val XYZ.theta: Float
-    get() = atan2((x to y).hypotenuse, z)
+    get() = asin(z / r)
 val XYZ.phi: Float
-    get() = atan2(y, x).clamp(-halfPI, halfPI)
+    get() = atan2(-y / r, x / r).clamp(-halfPI, halfPI)
 val XYZ.spherical
-    get() = SphericalChords(this)
+    get() = toEuler()
 
 data class SphericalChords(
     val r: Float,
