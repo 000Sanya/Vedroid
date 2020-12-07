@@ -29,8 +29,12 @@ fun XYZ.normalize(r: Float = this.r) = XYZ(x / r, y / r, z / r)
 
 fun XYZ.toEuler(r: Float = this.r) = SphericalChords(
     r,
-    theta = acos(x / sqrt(1 - y * y)),
-    phi = asin(y)
+    theta = when (y) {
+        -1f -> -halfPI
+        1f -> halfPI
+        else -> acos((x / sqrt(1 - y * y)).clamp(-1f, 1f))
+    },
+    phi = asin(y.clamp(-1f, 1f).also { println(it) })
 )
 
 const val halfPI = (PI / 2).toFloat()
